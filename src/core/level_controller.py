@@ -18,6 +18,7 @@ class LevelController:
         
         # Level definitions (normal, gema pairs)
         self.level_files = [
+            ("tutorial_normal.txt", "tutorial_gema.txt"),
             ("level_1_normal.txt", "level_1_gema.txt"),
             ("level_2_normal.txt", "level_2_gema.txt"),
             ("level_3_normal.txt", "level_3_gema.txt"),

@@ -22,6 +22,11 @@ class Player(Entity):
 
         self.attack_state: str | None = None
         self.combo_buffer: bool = False
+        
+        # Invincibility properties
+        self.invincible_end_time: int = 0
+        self.invincible_duration: int = 2000  # 2 seconds I-frames
+        self.is_visible: bool = True
 
     def _load_animations_from_spritesheet(self):
         self.animations = {'idle': [], 'run': [], 'jump': [], 'fall': [], 'death': []}
@@ -226,8 +231,19 @@ class Player(Entity):
             self.velocity.x = 0
         self._update_attack_state_machine()
         self.step(platforms)
+        
+        # Update invincibility blinking
+        current_time = pygame.time.get_ticks()
+        if current_time < self.invincible_end_time:
+            # Blink effect: toggle visibility every 100ms
+            self.is_visible = (current_time // 100) % 2 == 0
+        else:
+            self.is_visible = True
 
     def draw(self, screen: pygame.Surface, camera_offset_x: float, camera_offset_y: float):
+        if not self.is_visible:
+            return
+            
         img = self.image
         if self.direction == -1:
             img = pygame.transform.flip(img, True, False)
@@ -292,11 +308,13 @@ class Player(Entity):
                 self._end_attack()
 
     def apply_hazards(self, hazard_rects, fall_limit_y, is_invincible=False):
-        if is_invincible or not self.is_alive:
+        current_time = pygame.time.get_ticks()
+        if is_invincible or not self.is_alive or current_time < self.invincible_end_time:
             return None
 
         damage_source = None
-        if self.rect.top > fall_limit_y:
+        # Deteksi jatuh lebih cepat dengan menggunakan centery alih-alih top
+        if self.rect.centery > fall_limit_y:
             damage_source = 'fall'
         else:
             for r in hazard_rects:
@@ -309,9 +327,18 @@ class Player(Entity):
 
         self.take_damage()
 
-        if not self.is_alive:
-            return {'source': damage_source, 'temporary_death': False, 'delay_ms': 0}
+        if damage_source == 'fall':
+            # Jika jatuh, langsung mati sementara untuk respawn ke checkpoint terakhir
+            # Bahkan jika hearts > 0, karena tidak mungkin blink di dasar jurang
+            self.die()
+            return {'source': damage_source, 'temporary_death': True, 'delay_ms': 100}
 
-        self.die()
-        delay_ms = 500 if damage_source in ('fall', 'trap') else 500
-        return {'source': damage_source, 'temporary_death': True, 'delay_ms': delay_ms}
+        if not self.is_alive:
+            # Nyawa habis karena trap/enemy
+            return {'source': damage_source, 'temporary_death': True, 'delay_ms': 1000}
+
+        # Jika masih hidup dan kena trap/enemy ruang darat, set i-frames saja
+        self.invincible_end_time = current_time + self.invincible_duration
+        
+        # Kembalikan dict tanpa trigger temporary_death agar tidak delay & respawn
+        return {'source': damage_source, 'temporary_death': False, 'delay_ms': 0}

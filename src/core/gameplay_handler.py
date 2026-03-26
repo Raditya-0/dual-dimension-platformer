@@ -100,6 +100,9 @@ class GameplayHandler:
         
         # Collect enemy hazards
         for enemy in self.entity_manager.enemies:
+            if getattr(enemy, 'dim', 'both') not in (current_dim, 'both'):
+                continue
+            
             if getattr(enemy, 'is_dying', False):
                 continue
             
@@ -111,7 +114,6 @@ class GameplayHandler:
                 if isinstance(enemy, PatrollingEnemy) and hazard_rect.colliderect(player.rect):
                     if hasattr(enemy, 'on_player_contact') and enemy.is_alive:
                         enemy.on_player_contact()
-                    setattr(enemy, 'permanent_idle', True)
                 
                 if isinstance(enemy, ChaserEnemy) and hazard_rect.colliderect(player.rect):
                     chaser_that_hit = enemy
@@ -126,13 +128,6 @@ class GameplayHandler:
         result = player.apply_hazards(active_hazards, SCREEN_HEIGHT, is_invincible=False)
         
         if result:
-            # Handle chaser behavior on hit
-            if chaser_that_hit:
-                setattr(chaser_that_hit, 'permanent_combat_idle', True)
-                chaser_that_hit.state = 'combat_idle'
-                chaser_that_hit.frame_index = 0
-                chaser_that_hit.velocity.x = 0
-            
             # Handle temporary death
             if result.get('temporary_death'):
                 self.is_in_death_delay = True
@@ -153,9 +148,13 @@ class GameplayHandler:
         if not attack_rect:
             return []
         
+        current_dim = 'gema' if player.in_gema_dimension else 'normal'
         enemies_hit = []
         
         for enemy in self.entity_manager.get_active_enemies():
+            if getattr(enemy, 'dim', 'both') not in (current_dim, 'both'):
+                continue
+                
             if attack_rect.colliderect(enemy.rect):
                 enemies_hit.append(enemy)
                 
@@ -169,7 +168,11 @@ class GameplayHandler:
     
     def handle_enemy_blocking(self, player: 'Player'):
         """Handle enemy blocking player movement."""
+        current_dim = 'gema' if player.in_gema_dimension else 'normal'
         for enemy in self.entity_manager.enemies:
+            if getattr(enemy, 'dim', 'both') not in (current_dim, 'both'):
+                continue
+                
             if getattr(enemy, 'is_dying', False):
                 continue
             

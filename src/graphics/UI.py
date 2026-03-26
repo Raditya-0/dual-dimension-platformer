@@ -79,7 +79,7 @@ def draw_win_screen(game):
     game.main_menu_button = pygame.Rect(game.screen.get_width() / 2 - 100, game.screen.get_height() / 2 + 75, 200, 50)
 
     buttons = [
-        (game.restart_button, "Restart"),
+        (game.restart_button, "Mulai Baru"),
         (game.main_menu_button, "Menu Utama"),
     ]
 

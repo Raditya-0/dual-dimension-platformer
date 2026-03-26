@@ -230,11 +230,14 @@ class GameSetup:
                 left_bound = max([lx for lx in left_list if lx <= sx], default=sx - 80)
                 right_bound = min([rx for rx in right_list if rx >= sx], default=sx + 80)
                 
+                # Bosses exist in both dimensions to maintain state
+                actual_dim = 'both' if spawn['type'] == 'boss' else dim
+
                 entity_manager.add_enemy(
                     spawn['type'], spawn_rect, spawn['facing'],
-                    left_bound, right_bound
+                    left_bound, right_bound, actual_dim
                 )
-        
+
         add_enemies_from_data(normal_data, 'normal')
         add_enemies_from_data(gema_data, 'gema')
     

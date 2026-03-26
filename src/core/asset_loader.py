@@ -24,6 +24,7 @@ class AssetLoader:
         self.moon_image: Optional[pygame.Surface] = None
         self.moon_shadow_image: Optional[pygame.Surface] = None
         self.heart_icon: Optional[pygame.Surface] = None
+        self.tutorial_image: Optional[pygame.Surface] = None
         
         # Menu assets
         self.menu_assets: Dict[str, pygame.Surface] = {}
@@ -36,6 +37,19 @@ class AssetLoader:
         self.load_background_layers(game_surface_height)
         self.load_ui_assets()
         self.load_menu_assets()
+        self.load_tutorial_assets()
+        
+    def load_tutorial_assets(self):
+        """Load tutorial images."""
+        try:
+            tutorial_path = os.path.join(self.assets_path, 'Tutorial', 'Keyboard Tutorial.png')
+            if os.path.exists(tutorial_path):
+                img = pygame.image.load(tutorial_path).convert_alpha()
+                img = pygame.transform.scale_by(img, 0.5)
+                
+                self.tutorial_image = img
+        except pygame.error as e:
+            print(f"Failed to load tutorial image: {e}")
     
     def load_tiles(self):
         """Load tile images."""

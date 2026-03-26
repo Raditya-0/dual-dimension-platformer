@@ -138,7 +138,7 @@ class Boss(Entity):
         self.base_faces_right = False  # Boss sprite faces left by default
         
         # Boss stats
-        self.health = 10
+        self.health = 100
         self.is_dying = False
         self.blocks_player = True  # Boss has invisible wall to block player
         

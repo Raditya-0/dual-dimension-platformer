@@ -38,7 +38,8 @@ class EntityManager:
             print(f"[DEBUG] Player respawned - hearts: {self.player.hearts}, alive: {self.player.is_alive}")
     
     def add_enemy(self, enemy_type: str, rect: pygame.Rect, facing: str = 'right', 
-                  left_bound: Optional[float] = None, right_bound: Optional[float] = None):
+                  left_bound: Optional[float] = None, right_bound: Optional[float] = None, 
+                  dim: str = 'both'):
         """Add enemy to manager."""
         enemy = None
         
@@ -55,6 +56,7 @@ class EntityManager:
             enemy.direction = 1 if facing == 'right' else -1
         
         if enemy:
+            enemy.dim = dim
             self.enemies.append(enemy)
             
             # Store spawn info for respawning
@@ -64,7 +66,8 @@ class EntityManager:
                 'type': enemy_type,
                 'facing': facing,
                 'left_bound': left_bound,
-                'right_bound': right_bound
+                'right_bound': right_bound,
+                'dim': dim
             })
         
         return enemy
@@ -84,7 +87,8 @@ class EntityManager:
                 pygame.Rect(spawn_info['x'], spawn_info['y'] - 40, 40, 40),
                 spawn_info['facing'],
                 spawn_info.get('left_bound'),
-                spawn_info.get('right_bound')
+                spawn_info.get('right_bound'),
+                spawn_info.get('dim', 'both')
             )
         print(f"[DEBUG] Enemies respawned - total: {len(self.enemies)}")
     
@@ -103,8 +107,14 @@ class EntityManager:
             self.player.update(active_platforms)
         
         # Update enemies
-        for enemy in self.enemies:
-            enemy.update(active_platforms, self.player)
+        if self.player:
+            current_dim = 'gema' if self.player.in_gema_dimension else 'normal'
+            for enemy in self.enemies:
+                if getattr(enemy, 'dim', 'both') in (current_dim, 'both'):
+                    enemy.update(active_platforms, self.player)
+        else:
+            for enemy in self.enemies:
+                enemy.update(active_platforms, None)
         
         # Update NPCs (filter by dimension)
         if self.player:
@@ -119,18 +129,23 @@ class EntityManager:
         for campfire in self.campfires:
             campfire.draw(surface, offset_x, offset_y, [])  # Frames passed separately
         
+        current_dim = 'normal'
+        if self.player:
+            current_dim = 'gema' if self.player.in_gema_dimension else 'normal'
+
         # Draw enemies
         for enemy in self.enemies:
-            enemy.draw(surface, offset_x, offset_y)
+            if getattr(enemy, 'dim', 'both') in (current_dim, 'both'):
+                enemy.draw(surface, offset_x, offset_y)
         
         # Draw boss spells (if any)
         for enemy in self.enemies:
-            if isinstance(enemy, Boss):
-                enemy.draw_spells(surface, offset_x, offset_y)
+            if getattr(enemy, 'dim', 'both') in (current_dim, 'both'):
+                if isinstance(enemy, Boss):
+                    enemy.draw_spells(surface, offset_x, offset_y)
         
         # Draw NPCs (filter by dimension)
         if self.player:
-            current_dim = 'gema' if self.player.in_gema_dimension else 'normal'
             for npc in self.npcs:
                 if getattr(npc, 'dim', 'both') in (current_dim, 'both'):
                     npc.draw(surface, offset_x, offset_y)
