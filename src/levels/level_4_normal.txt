@@ -12,8 +12,8 @@
 
 
 
-                                                                      f                          b
-                                                                    pppppp                   ppppppppppp             
-                          ppppp                                 b             ppppppppp         
-    Sc  tjtjtj     pppppp                     t j            ppppppp                       t j              l   h  r    PPPPPPP    KD
-GGGGGGGGGGGGGGGGGGG           GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                         GGGGGGGGGG        GGGGGGGGGGGGGGG        GGGGGGGGGGGGGGGGGGGGGGG
+                                                                   
+                             
+                          ppppp                                   
+    Sc  tjtjtj     pppppp                     b                            K         D
+GGGGGGGGGGGGGGGGGGG           GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG                       

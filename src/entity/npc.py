@@ -9,9 +9,7 @@ TALK_KEY = pygame.K_e
 NPC_DIALOGS = {
     'oldman_normal': (
         "Halo, traveler!",
-        "Selamat datang di dunia Dual Dimension.",
-        "Di sini kamu bisa berpindah antara dua dimensi.",
-        "Untuk mengalahkan musuh,\n klik touchpad saat dekat.",
+        "Didepanmu ada banyak bahaya.",
         "Gunakan kemampuanmu dengan bijak.",
         "Semoga perjalananmu lancar!"
     ),
@@ -40,12 +38,8 @@ NPC_DIALOGS = {
         "Jangan lupa untuk kembali ke dimensi normal!"
     ),
     'bearded_normal': (
-        "Selamat datang, petualang!",
-        "Aku akan mengajarkanmu mekanik penting.",
-        "Tekan [SHIFT] untuk berpindah dimensi.",
-        "Kamu bisa berpindah kapan saja!",
-        "Gunakan ini dengan bijak \n  untuk menghindari bahaya.",
-        "Selamat berpetualang!"
+        "Hati-hati dengan jebakan di depan!",
+        "Mereka sangat berbahaya."
     ),
     'bearded_gema': (
         "Oh, kamu sudah di dimensi gema!",
@@ -55,9 +49,8 @@ NPC_DIALOGS = {
         "Jangan terlalu lama di sini!"
     ),
     'hat-man_normal': (
-        "Hati-hati dengan musuh di depan!",
-        "Mereka sangat berbahaya.",
-        "Semoga beruntung!"
+        "Hati-hati dengan jebakan di depan!",
+        "Mereka sangat berbahaya."
     ),
     'hat-man_gema': (
         "Selamat datang di dimensi gema.",

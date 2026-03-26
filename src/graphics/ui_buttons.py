@@ -44,13 +44,32 @@ class UIButtons:
             self._handle_playing_click(game, mouse_pos)
         elif state == GameStateEnum.PAUSED:
             self._handle_paused_click(game, mouse_pos)
-        elif state in [GameStateEnum.GAME_OVER, GameStateEnum.GAME_OVER_WIN]:
+        elif state == GameStateEnum.GAME_OVER:
             self._handle_game_over_click(game, mouse_pos)
+        elif state == GameStateEnum.GAME_OVER_WIN:
+            self._handle_game_over_win_click(game, mouse_pos)
     
     def _handle_main_menu_click(self, game, mouse_pos):
-        """Handle main menu button clicks - now uses new menu system."""
-        # New menu system handles clicks internally via draw function
-        pass
+        """Handle main menu button clicks."""
+        # Continue button
+        if self.continue_button.collidepoint(mouse_pos):
+            save_data = game.save_manager.load_progress()
+            game.level_controller.set_level(save_data.get('current_level', 1))
+            game.setup_level(new_game=True)
+            game.entity_manager.player.hearts = save_data.get('hearts', PLAYER_START_HEARTS)
+            game.state_controller.change_state(GameStateEnum.PLAYING)
+        
+        # New game button
+        elif self.new_game_button.collidepoint(mouse_pos):
+            game.level_controller.reset_to_first_level()
+            game.setup_level(new_game=True)
+            game.entity_manager.player.hearts = PLAYER_START_HEARTS
+            game.save_manager.save_progress(1, PLAYER_START_HEARTS)
+            game.state_controller.change_state(GameStateEnum.PLAYING)
+        
+        # Exit button
+        elif self.exit_button.collidepoint(mouse_pos):
+            game.running = False
     
     def _handle_playing_click(self, game, mouse_pos):
         """Handle playing state button clicks."""
@@ -134,9 +153,8 @@ class UIButtons:
             pygame.display.flip()
             
             try:
-                game.level_controller.reset_to_first_level()
-                game.setup_level(new_game=True, force_reparse=True)
                 game.entity_manager.player.hearts = PLAYER_START_HEARTS
+                game.respawn_player()
                 game.state_controller.change_state(GameStateEnum.PLAYING)
                 print("[UI] Game restarted successfully")
             except Exception as e:
@@ -149,6 +167,37 @@ class UIButtons:
             # Load saved level for background
             save_data = game.save_manager.load_progress()
             game.level_controller.set_level(save_data.get('current_level', 1))
+            game.setup_level(new_game=True)
+            game.state_controller.change_state(GameStateEnum.MAIN_MENU)
+
+    def _handle_game_over_win_click(self, game, mouse_pos):
+        """Handle win screen button clicks."""
+        # Define button rects here to ensure they exist
+        screen_width = game.screen.get_width()
+        screen_height = game.screen.get_height()
+        restart_button = pygame.Rect(screen_width / 2 - 100, screen_height / 2, 200, 50)
+        main_menu_button = pygame.Rect(screen_width / 2 - 100, screen_height / 2 + 75, 200, 50)
+        
+        if restart_button.collidepoint(mouse_pos):
+            print("[UI] Win Screen - Mulai Baru button clicked")
+            pygame.event.pump()
+            pygame.display.flip()
+            
+            try:
+                # Reset to first level
+                game.level_controller.reset_to_first_level()
+                game.setup_level(new_game=True, force_reparse=True)
+                game.entity_manager.player.hearts = PLAYER_START_HEARTS
+                game.state_controller.change_state(GameStateEnum.PLAYING)
+                print("[UI] Game restarted successfully")
+            except Exception as e:
+                print(f"[ERROR] Error restarting game: {e}")
+                import traceback
+                traceback.print_exc()
+        
+        elif main_menu_button.collidepoint(mouse_pos):
+            print("[UI] Win Screen - Main menu button clicked")
+            game.level_controller.set_level(1)
             game.setup_level(new_game=True)
             game.state_controller.change_state(GameStateEnum.MAIN_MENU)
     
@@ -183,35 +232,26 @@ class UIButtons:
             UI.draw_game_over_screen(game)
     
     def _draw_main_menu(self, game, mouse_pos):
-        """Draw main menu with new design."""
+        """Draw main menu."""
         from graphics import UI
         
-        # Initialize prev_mouse_pressed if not exists
-        if not hasattr(game, 'prev_mouse_pressed'):
-            game.prev_mouse_pressed = False
+        UI.draw_text(game, "Dual Dimension", 80, (255, 255, 255), 
+                    SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4, shadow_color=(20, 20, 20))
         
-        # Draw new menu and get action
-        action = UI.draw_main_menu_new(
-            game, 
-            game.asset_loader, 
-            mouse_pos, 
-            game.prev_mouse_pressed
-        )
+        # Continue button
+        continue_color = (150, 150, 150) if self.continue_button.collidepoint(mouse_pos) else (100, 100, 100)
+        pygame.draw.rect(game.screen, continue_color, self.continue_button, border_radius=10)
+        UI.draw_text(game, "Lanjutkan", 32, (255, 255, 255), 
+                    self.continue_button.centerx, self.continue_button.centery)
         
-        # Handle menu actions
-        if action == "CONTINUE":
-            save_data = game.save_manager.load_progress()
-            game.level_controller.set_level(save_data.get('current_level', 1))
-            game.setup_level(new_game=True)
-            game.entity_manager.player.hearts = save_data.get('hearts', PLAYER_START_HEARTS)
-            game.state_controller.change_state(GameStateEnum.PLAYING)
+        # New game button
+        new_game_color = (150, 150, 150) if self.new_game_button.collidepoint(mouse_pos) else (100, 100, 100)
+        pygame.draw.rect(game.screen, new_game_color, self.new_game_button, border_radius=10)
+        UI.draw_text(game, "Mulai Baru", 32, (255, 255, 255), 
+                    self.new_game_button.centerx, self.new_game_button.centery)
         
-        elif action == "NEW_GAME":
-            game.level_controller.reset_to_first_level()
-            game.setup_level(new_game=True)
-            game.entity_manager.player.hearts = PLAYER_START_HEARTS
-            game.save_manager.save_progress(1, PLAYER_START_HEARTS)
-            game.state_controller.change_state(GameStateEnum.PLAYING)
-        
-        elif action == "EXIT":
-            game.running = False
+        # Exit button
+        exit_color = (150, 150, 150) if self.exit_button.collidepoint(mouse_pos) else (100, 100, 100)
+        pygame.draw.rect(game.screen, exit_color, self.exit_button, border_radius=10)
+        UI.draw_text(game, "Keluar", 32, (255, 255, 255), 
+                    self.exit_button.centerx, self.exit_button.centery)

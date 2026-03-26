@@ -157,12 +157,6 @@ class PatrollingEnemy(Enemy):
             self.state = 'death'
             self.step(platforms)
             return
-        # If set to permanent idle (after a kill), remain idle and do not move
-        if getattr(self, 'permanent_idle', False):
-            self.velocity.x = 0
-            self.state = 'idle'
-            self.step(platforms)
-            return
 
         if self._is_idling_due_to_contact():
             # Locked idle after contact: do not move
@@ -314,13 +308,6 @@ class ChaserEnemy(Enemy):
             return
 
         now = pygame.time.get_ticks()
-        
-        # Check if in permanent combat idle (after killing player)
-        if getattr(self, 'permanent_combat_idle', False):
-            self.velocity.x = 0
-            self.state = 'combat_idle'
-            self.step(platforms)
-            return
 
         if player:
             contact_rect = self.get_block_rect()
@@ -341,13 +328,11 @@ class ChaserEnemy(Enemy):
                 self._landed_hit_this_attack = True
             self.step(platforms)
             if self.animation_finished:
-                if self._landed_hit_this_attack:
-                    self.state = 'combat_idle'
-                    self.frame_index = 0
-                    self.animation_finished = False
-                    self._combat_idle_until_ms = now + self.combat_idle_duration_ms
-                else:
-                    self.state = 'run' if self.alerted else 'idle'
+                # Selalu cooldown 1 detik setelah menyerang, tidak peduli kena atau meleset
+                self.state = 'combat_idle'
+                self.frame_index = 0
+                self.animation_finished = False
+                self._combat_idle_until_ms = now + self.combat_idle_duration_ms
                 self._landed_hit_this_attack = False
             return
 

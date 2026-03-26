@@ -41,18 +41,17 @@ Aturan huruf besar/kecil untuk arah hadap: Huruf besar = hadap kanan, huruf keci
 
 - A/a  : Titik muncul NPC pertama (oldman/woman). Arah hadap: A→kiri, a→kanan.
   Dialog: Sambutan umum dan tips perjalanan.
-  
 - Q/q  : Titik muncul NPC kedua (bearded). Arah hadap: Q→kiri, q→kanan.
   Dialog: Tutorial tentang mekanisme shift dimensi (tekan SHIFT).
-  
 - W/w  : Titik muncul NPC ketiga (hat-man). Arah hadap: W→kiri, w→kanan.
   Dialog: Peringatan tentang bahaya dan tips strategi.
 
   Semua NPC akan otomatis di-snap ke lantai terdekat sesuai dimensi (normal/gema).
+
   - Jika ditempatkan di map normal → NPC muncul di dimensi normal
   - Jika ditempatkan di map gema → NPC muncul di dimensi gema
-  Pemain dapat berinteraksi dengan NPC dengan mendekati dan menekan tombol [E].
-  Catatan: Setiap NPC memiliki variant dan dialog yang berbeda sesuai fungsinya.
+    Pemain dapat berinteraksi dengan NPC dengan mendekati dan menekan tombol [E].
+    Catatan: Setiap NPC memiliki variant dan dialog yang berbeda sesuai fungsinya.
 
 7) Penanda & Kamera
 
@@ -78,9 +77,9 @@ Tips Desain
 - Gunakan huruf besar jika Anda ingin musuh menghadap ke kanan pada awalnya; huruf kecil untuk menghadap ke kiri.
 - Untuk NPC (A/a/Q/q/W/w):
   * NPC1 (A/a): huruf BESAR (A) = hadap kiri, huruf kecil (a) = hadap kanan
-  * NPC2 (Q/q): huruf BESAR (Q) = hadap kiri, huruf kecil (q) = hadap kanan (DIUBAH DARI B/b)
+  * NPC2 (Q/q): huruf BESAR (Q) = hadap kiri, huruf kecil (q) = hadap kanan
   * NPC3 (W/w): huruf BESAR (W) = hadap kiri, huruf kecil (w) = hadap kanan
-  NPC akan otomatis turun ke lantai terdekat.
+    NPC akan otomatis turun ke lantai terdekat.
 - Letakkan NPC di lokasi strategis seperti dekat checkpoint, area istirahat, atau sebelum area berbahaya untuk memberikan tips.
 - Boss (B/b) sebaiknya di area terbuka dengan ruang gerak. Boss memiliki invisible wall untuk mencegah player lewat dengan mudah.
 - Pemicu akhir (D/d) biasanya ditempatkan di dekat tepi paling kanan. Mereka mengunci input dan kamera serta menggerakkan pemain keluar secara otomatis.
@@ -90,5 +89,3 @@ Huruf yang Masih Tersedia
 
 Huruf berikut belum digunakan untuk spawning:
 E, I, M, O, U, V, X, Z
-
-Dapat digunakan untuk karakter/objek baru di masa depan.

@@ -241,7 +241,8 @@ class Game:
             
             # Update all entities
             for enemy in self.entity_manager.enemies:
-                enemy.update(active_platforms, player)
+                if getattr(enemy, 'dim', 'both') in (current_dim, 'both'):
+                    enemy.update(active_platforms, player)
             
             # Update NPCs
             for npc in self.entity_manager.npcs:
@@ -267,11 +268,20 @@ class Game:
         
         for campfire in self.entity_manager.campfires:
             campfire.update(self.asset_loader.campfire_frames)
+            # Checkpoint collision logic
+            if player.rect.colliderect(campfire.rect):
+                # Update respawn point to this campfire
+                new_start = (campfire.rect.left, campfire.rect.bottom)
+                if self.entity_manager.start_pos != new_start:
+                    self.entity_manager.start_pos = new_start
         
         # Handle death
         if not player.is_alive:
             if self.gameplay.check_death_delay_complete(player):
-                self.respawn_player()
+                if player.hearts <= 0:
+                    self.state_controller.change_state(GameStateEnum.GAME_OVER)
+                else:
+                    self.respawn_player()
             elif not self.gameplay.is_in_death_delay and player.hearts <= 0:
                 self.state_controller.change_state(GameStateEnum.GAME_OVER)
         
@@ -280,6 +290,9 @@ class Game:
     
     def draw(self):
         """Main draw loop - delegates to renderer."""
+        # Only show tutorial if in PLAYING state (not Main Menu)
+        is_playing = self.state_controller.current == GameStateEnum.PLAYING
+        
         self.renderer.render(
             entity_manager=self.entity_manager,
             camera=self.camera,
@@ -288,7 +301,9 @@ class Game:
             trigger_traps=self.trigger_traps,
             parallax_layers=self.parallax_layers,
             moon_object=self.moon_object,
-            moon_shadow_object=self.moon_shadow_object
+            moon_shadow_object=self.moon_shadow_object,
+            current_level_num=self.level_controller.current_level,
+            is_playing=is_playing
         )
     
     def snap_actor_to_ground(self, actor_rect, dim='normal', max_dx=160):

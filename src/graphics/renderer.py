@@ -35,7 +35,9 @@ class Renderer:
                trigger_traps: List,
                parallax_layers: List,
                moon_object: Any,
-               moon_shadow_object: Any):
+               moon_shadow_object: Any,
+               current_level_num: int = 1,
+               is_playing: bool = True):
         """
         Main render method - draws everything to screen.
         
@@ -48,6 +50,8 @@ class Renderer:
             parallax_layers: List of parallax layer objects
             moon_object: Moon drawable object
             moon_shadow_object: Moon shadow drawable object
+            current_level_num: Current level number (for tutorial, etc)
+            is_playing: Whether the game is in active playing state
         """
         player = entity_manager.player
         camera_offset = camera.get_offset(player.rect)
@@ -74,7 +78,7 @@ class Renderer:
         self._draw_traps(trigger_traps, current_dim, camera_offset, asset_loader)
         
         # Draw campfires
-        self._draw_campfires(entity_manager.campfires, camera_offset, asset_loader)
+        self._draw_campfires(entity_manager.campfires, camera_offset, asset_loader, current_level_num, is_playing)
         
         # Draw entities (player, enemies, NPCs)
         entity_manager.draw_all(self.game_surface, camera_offset[0], camera_offset[1])
@@ -123,7 +127,7 @@ class Renderer:
                 )
     
     def _draw_campfires(self, campfires: List, camera_offset: tuple, 
-                        asset_loader: 'AssetLoader'):
+                        asset_loader: 'AssetLoader', current_level_num: int = 1, is_playing: bool = True):
         """Draw all campfires."""
         for campfire in campfires:
             campfire.draw(
@@ -132,6 +136,14 @@ class Renderer:
                 camera_offset[1], 
                 asset_loader.campfire_frames
             )
+            # Draw tutorial image above campfire in Level 1 only if playing
+            if current_level_num == 1 and asset_loader.tutorial_image and is_playing:
+                tut_img = asset_loader.tutorial_image
+                tut_rect = tut_img.get_rect(midbottom=(
+                    campfire.rect.centerx - camera_offset[0],
+                    campfire.rect.top - camera_offset[1] - 50  
+                ))
+                self.game_surface.blit(tut_img, tut_rect)
     
     def _draw_debug(self, entity_manager: 'EntityManager', 
                     camera_offset: tuple, current_dim: str):
