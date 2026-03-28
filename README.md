@@ -423,7 +423,7 @@ Terima kasih kepada para artist yang asset-nya digunakan:
 ## Cara Bermain
 
 1. Clone repository
-2. Install dependencies: `pip install pygame`
+2. Install dependencies: `pip install -r requirements.txt`
 3. Jalankan game: `python src/main.py`
 4. Gunakan **Shift** untuk berpindah dimensi
 5. Hindari jebakan dan capai pintu keluar!

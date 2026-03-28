@@ -90,7 +90,7 @@ def load_images_dir(*parts, key_exts=(".png", ".jpg", ".jpeg", ".bmp", ".gif")):
 
 
 def load_font_rel(path_in_assets: str, size=22):
-    fpath = project_root_from_this_file() / "assets" / path_in_assets
+    fpath = project_root_from_this_file() / "Assets" / path_in_assets
     return pygame.font.Font(str(fpath), size)
 
 # NPC Type Configuration

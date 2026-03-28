@@ -1,3 +1,15 @@
 __pycache__/
 *.pyc
 .venv/
+
+# Python caches
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Editor/OS files
+.DS_Store
+Thumbs.db
+
+# Runtime save files
+saves/*.json
